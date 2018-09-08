@@ -1,0 +1,30 @@
+development:
+  clients:
+    default:
+      uri: <%=ENV["MONGODB_URI"]%>
+      max_retries_on_connection_failure: 20
+      persist_in_safe_mode: true
+      skip_version_check: true
+      options:
+  options:
+
+test:
+  clients:
+    default:
+      database: home_tv_test
+      hosts:
+        - localhost:27017
+      options:
+        read:
+          mode: :primary
+        max_pool_size: 1
+
+production:
+  clients:
+    default:
+      uri: <%=ENV["MONGODB_URI"]%>
+      max_retries_on_connection_failure: 20
+      persist_in_safe_mode: true
+      skip_version_check: true
+      options:
+  options:

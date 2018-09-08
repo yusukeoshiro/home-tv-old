@@ -11,7 +11,13 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', '>= 1.1.0', require: false
 
+# added by Yusuke
+gem 'mongoid'
+gem 'sidekiq'
+gem 'nokogiri'
+
 group :development, :test do
+  gem 'dotenv-rails'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
