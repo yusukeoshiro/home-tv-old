@@ -33,6 +33,10 @@ class Show
         end
     end
 
+    def is_over
+        DateTime.now >= self.end_time
+    end
+
     def is_showing_now
         return (DateTime.now > self.start_time) && (DateTime.now <= self.end_time)
     end
