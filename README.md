@@ -97,7 +97,7 @@ sudo modprobe -r px4_drv sudo modprobe px4_drv
 
 
 ```
-scp pi@raspberrypi:/home/pi/test.ts ~/Desktop/test.ts
+scp pi@raspberrypi:/home/pi/home-tv-client/videos/48865457.mp4 ~/Desktop/48865457.mp4
 ```
 
 recpt1 --b25 --strip --sid hd --http 8888

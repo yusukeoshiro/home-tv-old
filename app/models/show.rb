@@ -19,4 +19,26 @@ class Show
 
     index({ uuid: 1, epg_date: 1 }, unique: true)
 
+    scope :showing_now, -> { where( :start_time.lte => DateTime.now, :end_time.gt => DateTime.now ) }
+
+    # this will typically equal Show.duration but can be less if the show has started already
+    def footage_duration
+        return 0 if self.end_time < DateTime.now
+
+        if self.start_time < DateTime.now
+            # started already
+            return ( ( self.end_time - DateTime.now ) * 60 * 60 * 24 ).to_i
+        else
+            return self.duration
+        end
+    end
+
+    def is_showing_now
+        return (DateTime.now > self.start_time) && (DateTime.now <= self.end_time)
+    end
+
+    def record
+        ShowRecorderWorker.perform_at( self.start_time, self.uuid )
+    end
+
 end

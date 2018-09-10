@@ -9,6 +9,10 @@ echo "installing tools..."
 sudo apt-get -y install autoconf build-essential cmake curl git libssl-dev libtool libboost-all-dev pkg-config yasm
 sudo apt-get -y install ruby-dev
 
+echo "configuring usb hard drive"
+sudo apt-get -y install exfat-fuse
+
+
 echo "installing ffmpeg"
 cd
 wget https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
@@ -17,6 +21,9 @@ cd ffmpeg
 ./configure --enable-static --enable-omx-rpi --enable-mmal
 make -j4
 sudo make install
+
+
+echo "installing usb hard drive"
 
 
 echo "installing BCAS card reader..."
