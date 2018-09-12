@@ -1,0 +1,154 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js"></script>
+
+
+<div ng-app="my-app" ng-controller="AppController as app" ng-init="init();">
+
+    <div class="container">
+        <h1>TV Program</h1>
+
+
+        <div class="card" ng-repeat="show in shows">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                            {{ show.title }}
+                            {{ show.channel_name }} <br/>
+                            {{ show.start_time }} -
+                            {{ show.end_time }}
+                            <p>
+                                {{ show.description }}
+                            </p>
+
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        <input type="button" class="btn btn-primary" value="Record" ng-click="onRecord( show );">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+<script>
+
+
+    var module = angular.module('my-app', []);
+    module.controller('AppController', function($scope, $http,  $interval, $timeout) {
+        $scope.shows = [];
+
+        $scope.onRecord = function ( show ) {
+            $http.post('/api/v1/show/' + show.uuid + '/record' ).then(
+                function(response) {
+                    console.log( response );
+                },
+                function(response) {
+                    console.log(response);
+                }
+            );
+
+        }
+
+
+        $scope.init = function () {
+            $scope.getShows(new Date());
+        }
+
+
+        $scope.formatDate = function (date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        $scope.getShows = function ( date ) {
+            const date_s = $scope.formatDate( date );
+
+            $http.get('/api/v1/shows?date=' + date_s ).then(
+                function(response) {
+                    let result = response.data.result;
+                    result.sort(function(a, b){
+                        var keyA = a.start_time,
+                            keyB = b.start_time;
+                        // Compare the 2 dates
+                        if(keyA < keyB) return -1;
+                        if(keyA > keyB) return 1;
+                        return 0;
+                    });
+                    $scope.shows = result;
+                    console.log( result );
+                },
+                function(response) {
+                    console.log(response);
+                }
+            );
+
+
+        }
+
+
+/*
+    $(function() {
+        const date_s = formatDate(new Date());
+
+        $.ajax({
+            type: "GET",
+            url: "/api/v1/shows?date=" + date_s,
+            timeout: 10000,
+            cache: true
+        })
+        .done(function (response, textStatus, jqXHR) {
+
+            result = response.result;
+            result.sort(function(a, b){
+                var keyA = a.start_time,
+                    keyB = b.start_time;
+                // Compare the 2 dates
+                if(keyA < keyB) return -1;
+                if(keyA > keyB) return 1;
+                return 0;
+            });
+
+
+            console.log(result);
+            if (response.status === "err") {
+                alert("err: " + response.msg);
+            } else {
+
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+
+            console.log(jqXHR);
+            alert("失敗: サーバー内でエラーがあったか、サーバーから応答がありませんでした。");
+
+        })
+        .always(function (data_or_jqXHR, textStatus, jqXHR_or_errorThrown) {
+            // done,failを問わず、常に実行される処理
+        });
+
+
+    });
+*/
+
+
+
+    });
+
+
+
+
+
+
+</script>

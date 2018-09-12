@@ -1,6 +1,8 @@
 module Api
     module V1
         class ShowsController < ApplicationController
+            skip_before_action :verify_authenticity_token
+
             def index
                 date = nil
                 region = nil
@@ -27,6 +29,14 @@ module Api
                         result: shows
                     }
                 end
+            end
+
+            def record
+                uuid = params[:uuid]
+                p uuid
+                show = Show.find_by(:uuid => uuid)
+                show.record
+                render :json => {}
             end
         end
     end
