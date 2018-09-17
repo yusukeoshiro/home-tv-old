@@ -8,34 +8,29 @@ sudo apt-get -y upgrade
 echo "installing tools..."
 sudo apt-get -y install autoconf build-essential cmake curl git libssl-dev libtool libboost-all-dev pkg-config yasm
 sudo apt-get -y install ruby-dev
+sudo apt-get -y install ffmpeg
+sudo apt-get -y install raspberrypi-kernel-headers # Raspbrry Pi only
 
-echo "configuring usb hard drive"
-sudo apt-get -y install exfat-fuse
-
-
-echo "installing ffmpeg"
-cd
-wget https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
-tar jxvf ffmpeg-snapshot.tar.bz2
-cd ffmpeg
-./configure --enable-static --enable-omx-rpi --enable-mmal
-make -j4
-sudo make install
+# echo "configuring usb hard drive"
+# sudo apt-get -y install exfat-fuse
+#
+#
+# echo "installing ffmpeg"
+# cd
+# wget https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+# tar jxvf ffmpeg-snapshot.tar.bz2
+# cd ffmpeg
+# ./configure --enable-static --enable-omx-rpi --enable-mmal
+# make -j4
+# sudo make install
 
 
 echo "installing usb hard drive"
 
 
 echo "installing BCAS card reader..."
-# sudo dpkg --configure -a
-# sudo apt -y --fix-broken install
-
-# sudo apt install aptitude
-# sudo aptitude install yum-utils
-# sudo apt autoremove
-
 sudo apt-get -y install pcscd pcsc-tools libpcsclite-dev
-
+# to test if it worked successfully run `pcsc_scan`
 
 echo "installing arib25..."
 cd
@@ -60,7 +55,8 @@ sudo mkdir -p /lib/firmware
 sudo cp it930x-firmware.bin /lib/firmware/
 cd ../
 
-sudo apt-get -y install raspberrypi-kernel-headers # Raspbrry Pi only
+# reboot if necessary
+
 cd driver
 make
 sudo make install
