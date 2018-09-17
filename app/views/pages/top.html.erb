@@ -1,35 +1,72 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js"></script>
 
+
+<style>
+    .show {
+        border: #DDD solid 1px;
+        overflow: hidden;
+    }
+    .finished {
+        background-color: #AAA;
+    }
+</style>
 
 <div ng-app="my-app" ng-controller="AppController as app" ng-init="init();">
 
     <div class="container">
         <h1>TV Program</h1>
 
+        <button class="btn btn-primary" ng-click="prev();">Previous</button>
+        <button class="btn btn-primary" ng-click="next();">Next</button>
+        <div style="position: relative;">
+            <div class="show" ng-repeat="show in shows" style="position: absolute;"
+                ng-class="{'finished': show.isFinished}"
+                ng-style="{'top': show.top + 'px', 'left': show.left + 'px', 'width': show.width + 'px', 'height': show.height + 'px'}"
+                ng-click="showReservePanel(show);">
+                <small>
+                    {{ show.startTimePrint }} - {{ show.endTimePrint }}
+                </small> <br/>
+                {{ show.title }}
+                <p style="font-size: 70%;">
+                    {{ show.description }}
+                </p>
 
-        <div class="card" ng-repeat="show in shows">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-sm-8">
-                            {{ show.title }}
-                            {{ show.channel_name }} <br/>
-                            {{ show.start_time }} -
-                            {{ show.end_time }}
-                            <p>
-                                {{ show.description }}
-                            </p>
-
-                    </div>
-                    <div class="col-sm-4 text-center">
-                        <input type="button" class="btn btn-primary" value="Record" ng-click="onRecord( show );">
-                    </div>
-                </div>
 
             </div>
-        </div>
 
+        </div>
     </div>
+
+
+
+
+    <div id="reserver-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{showOnFocus.title}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ showOnFocus.startTimePrint }} - {{ showOnFocus.endTimePrint }}
+                    <p>{{showOnFocus.description}}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="onRecord(showOnFocus);">Record</button>
+                    <button type="button" class="btn btn-danger" disabled>Recurring</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -40,11 +77,13 @@
 
     var module = angular.module('my-app', []);
     module.controller('AppController', function($scope, $http,  $interval, $timeout) {
+        $scope.date = new Date();
         $scope.shows = [];
 
         $scope.onRecord = function ( show ) {
             $http.post('/api/v1/show/' + show.uuid + '/record' ).then(
                 function(response) {
+                    alert("Success!");
                     console.log( response );
                 },
                 function(response) {
@@ -56,9 +95,39 @@
 
 
         $scope.init = function () {
-            $scope.getShows(new Date());
+            $scope.getShows( $scope.date );
+
+
         }
 
+        $scope.showReservePanel = function ( show ) {
+            $scope.showOnFocus = show;
+            $('#reserver-modal').modal("show");
+        }
+
+
+        $scope.prev = function () {
+            $scope.date = new Date(
+				$scope.date.getFullYear(),
+				$scope.date.getMonth(),
+				$scope.date.getDate() - 1,
+				$scope.date.getHours(),
+				$scope.date.getMinutes(),
+				$scope.date.getSeconds());
+    		$scope.getShows( $scope.date );
+        }
+
+        $scope.next = function () {
+            $scope.date = new Date(
+				$scope.date.getFullYear(),
+				$scope.date.getMonth(),
+				$scope.date.getDate() + 1,
+				$scope.date.getHours(),
+				$scope.date.getMinutes(),
+				$scope.date.getSeconds());
+    		$scope.getShows( $scope.date );
+
+        }
 
         $scope.formatDate = function (date) {
             var d = new Date(date),
@@ -72,22 +141,78 @@
             return [year, month, day].join('-');
         }
 
+        $scope.record = function ( show ) {
+
+        }
+
         $scope.getShows = function ( date ) {
+            // date = new Date("2018-09-17");
+            date.setHours(5,0,0,0);
+            const frameStart = date.valueOf();
             const date_s = $scope.formatDate( date );
 
             $http.get('/api/v1/shows?date=' + date_s ).then(
                 function(response) {
                     let result = response.data.result;
-                    result.sort(function(a, b){
-                        var keyA = a.start_time,
-                            keyB = b.start_time;
-                        // Compare the 2 dates
-                        if(keyA < keyB) return -1;
-                        if(keyA > keyB) return 1;
-                        return 0;
-                    });
-                    $scope.shows = result;
-                    console.log( result );
+                    // result.sort(function(a, b){
+                    //     var keyA = a.start_time,
+                    //         keyB = b.start_time;
+                    //     // Compare the 2 dates
+                    //     if(keyA < keyB) return -1;
+                    //     if(keyA > keyB) return 1;
+                    //     return 0;
+                    // });
+
+                    $scope.shows = new Array();
+                    const now = new Date();
+                    const channels = new Array();
+
+                    for ( const show of result ) {
+                        if ( channels.indexOf( show.channel_name ) === -1 ) {
+                            channels.push( show.channel_name );
+                            // console.log( channels );
+                        }
+                        const startTime = new Date(show.start_time);
+                        const endTime = new Date(show.end_time);
+                        const tmp = {
+                            "title": show.title,
+                            "channelName": show.channel_name,
+                            "channelIndex": channels.indexOf( show.channel_name ),
+                            "startTime": startTime,
+                            "endTime": endTime,
+                            "startTimeHour": startTime.getHours(),
+                            "startTimeMinute": startTime.getMinutes(),
+                            "startTimePrint": startTime.toTimeString().split(" ")[0].substring(0, 5),
+                            "endTimeHour": endTime.getHours(),
+                            "endTimeMinute": endTime.getMinutes(),
+                            "endTimePrint": endTime.toTimeString().split(" ")[0].substring(0, 5),
+                            "description": show.description,
+                            "isFinished": endTime < now,
+                            "duration": show.duration,
+                            "uuid": show.uuid
+                        };
+
+                        if ( tmp.startTime < date ) {
+                            tmp.top = 0;
+                        } else {
+                            tmp.top = (tmp.startTime.valueOf() - frameStart) / 1000;
+                        }
+                        tmp.width = 200;
+                        tmp.left = tmp.channelIndex * tmp.width;
+                        const heightCoef = 10;
+                        tmp.top = tmp.top / heightCoef;
+                        tmp.height = tmp.duration / heightCoef;
+
+
+
+                        // console.log( tmp );
+                        $scope.shows.push(tmp);
+                        // console.log( show );
+
+                    }
+
+                    // $scope.shows = result;
+                    // console.log( result );
                 },
                 function(response) {
                     console.log(response);
@@ -96,52 +221,6 @@
 
 
         }
-
-
-/*
-    $(function() {
-        const date_s = formatDate(new Date());
-
-        $.ajax({
-            type: "GET",
-            url: "/api/v1/shows?date=" + date_s,
-            timeout: 10000,
-            cache: true
-        })
-        .done(function (response, textStatus, jqXHR) {
-
-            result = response.result;
-            result.sort(function(a, b){
-                var keyA = a.start_time,
-                    keyB = b.start_time;
-                // Compare the 2 dates
-                if(keyA < keyB) return -1;
-                if(keyA > keyB) return 1;
-                return 0;
-            });
-
-
-            console.log(result);
-            if (response.status === "err") {
-                alert("err: " + response.msg);
-            } else {
-
-            }
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-
-            console.log(jqXHR);
-            alert("失敗: サーバー内でエラーがあったか、サーバーから応答がありませんでした。");
-
-        })
-        .always(function (data_or_jqXHR, textStatus, jqXHR_or_errorThrown) {
-            // done,failを問わず、常に実行される処理
-        });
-
-
-    });
-*/
-
 
 
     });
