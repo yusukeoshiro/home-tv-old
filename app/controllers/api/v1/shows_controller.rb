@@ -33,9 +33,8 @@ module Api
 
             def record
                 uuid = params[:uuid]
-                p uuid
                 show = Show.find_by(:uuid => uuid)
-                show.record
+                show.record                
                 render :json => {}
             end
         end
