@@ -16,6 +16,7 @@ gem 'mongoid'
 gem 'sidekiq'
 gem 'nokogiri'
 gem 'oauth2'
+gem 'therubyracer', platforms: :ruby
 
 group :development, :test do
   gem 'dotenv-rails'
@@ -36,4 +37,5 @@ group :test do
   gem 'chromedriver-helper'
 end
 
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+# gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'tzinfo-data'
