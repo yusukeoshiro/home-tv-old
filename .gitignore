@@ -26,3 +26,5 @@
 .DS_Store
 dump.rdb
 *.mp4
+*.ts
+

@@ -7,8 +7,8 @@ require_relative "./util.rb"
 
 Dotenv.load
 
-RECORDING_PATH = "/home/yusuke/Videos/recording"
-RECORDED_PATH  = "/home/yusuke/Videos/recorded"
+RECORDING_PATH = "~/home-tv/Videos/recording"
+RECORDED_PATH  = "~/home-tv/Videos/recorded"
 
 
 
