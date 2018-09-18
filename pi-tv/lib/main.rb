@@ -7,8 +7,8 @@ require_relative "./util.rb"
 
 Dotenv.load
 
-RECORDING_PATH = "~/home-tv/Videos/recording"
-RECORDED_PATH  = "~/home-tv/Videos/recorded"
+RECORDING_PATH = "/home/pi/home-tv/Videos/recording"
+RECORDED_PATH  = "/home/pi/home-tv/Videos/recorded"
 
 
 
@@ -19,8 +19,8 @@ def record_show show
 	start_time = DateTime.parse(show["show"]["start_time"]).new_offset("+09:00")
 	file_name = "#{start_time.strftime("%Y%m%d_%H%M")}_#{show["show"]["uuid"]}.ts"
 	p file_name
-	command = "recpt1 --b25 --strip #{show["show"]["channel_number"]} #{show["footage_duration"]} #{RECORDING_PATH}/#{file_name}"
-	# command = "recpt1 --b25 --strip #{show["show"]["channel_number"]} 10 #{RECORDING_PATH}/#{file_name}"
+	# command = "recpt1 --b25 --strip #{show["show"]["channel_number"]} #{show["footage_duration"]} #{RECORDING_PATH}/#{file_name}"
+	command = "recpt1 --b25 --strip #{show["show"]["channel_number"]} 10 #{RECORDING_PATH}/#{file_name}"
 	result = %x( #{command} )
 	puts result
 	File.rename("#{RECORDING_PATH}/#{file_name}", "#{RECORDED_PATH}/#{file_name}")
