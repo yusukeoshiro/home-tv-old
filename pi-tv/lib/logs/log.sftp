@@ -1,0 +1,21 @@
+uploader live...
+watching /home/pi/home-tv/Videos/recorded...
+uploading /home/pi/home-tv/Videos/recorded/20180921_0324_49099998.ts...
+./upload.sh yusuke 35.227.49.183 /mnt/disks/videos/recording /home/pi/home-tv/Videos/recorded/20180921_0324_49099998.ts
+yusuke
+35.227.49.183
+/mnt/disks/videos/recording
+/home/pi/home-tv/Videos/recorded/20180921_0324_49099998.ts
+Changing to: /mnt/disks/videos/recording
+sftp> put /home/pi/home-tv/Videos/recorded/20180921_0324_49099998.ts
+Uploading /home/pi/home-tv/Videos/recorded/20180921_0324_49099998.ts to /mnt/disks/videos/recording/20180921_0324_49099998.ts
+----------
+0
+pid 7723 exit 0
+upload complete!
+./move.sh yusuke 35.227.49.183 /mnt/disks/videos/recording/20180921_0324_49099998.ts /mnt/disks/videos/recorded/20180921_0324_49099998.ts
+yusuke
+35.227.49.183
+/mnt/disks/videos/recording/20180921_0324_49099998.ts
+/mnt/disks/videos/recorded/20180921_0324_49099998.ts
+sftp> rename /mnt/disks/videos/recording/20180921_0324_49099998.ts  /mnt/disks/videos/recorded/20180921_0324_49099998.ts

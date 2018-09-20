@@ -6,8 +6,8 @@ kill -9 $(pidof ruby watch.rb)
 
 
 cd /home/pi/home-tv/pi-tv
-cd lib && ruby main.rb &
-cd lib && ruby sftp.rb &
-recpt1 --device /dev/px4video3 --b25 --strip --sid hd --http 8888 &
+cd lib && ruby main.rb | tee logs/log.main &
+cd lib && ruby sftp.rb | tee logs/log.sftp &
+recpt1 --device /dev/px4video3 --b25 --strip --sid hd --http 8888 | tee logs/log.tv &
 
 exit 0
