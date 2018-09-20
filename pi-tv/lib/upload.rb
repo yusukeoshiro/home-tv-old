@@ -12,9 +12,9 @@ require_relative "./util.rb"
 
 Dotenv.load
 
-RECORDED_PATH   = "/home/yusuke/home-tv/Videos/recorded"
-CONVERTING_PATH = "/home/yusuke/home-tv/Videos/converting"
-CONVERTED_PATH  = "/home/yusuke/home-tv/Videos/converted"
+RECORDED_PATH   = "/mnt/disks/videos/recorded"
+CONVERTING_PATH = "/mnt/disks/videos/converting"
+CONVERTED_PATH  = "/mnt/disks/videos/converted"
 
 $redis = Redis.new(url: ENV["REDIS_URL"])
 
@@ -57,7 +57,7 @@ def get_upload_token file_path, access_token
 		puts notify "Finished uploading #{file_path} in #{elapsed} seconds"
 		return upload_token
 	else
-		raise "upload token was not retrieved by google photos api"
+		raise notify "upload token was not retrieved by google photos api"
 	end
 end
 
@@ -82,6 +82,7 @@ def create_media upload_token, access_token, description
 	req["Authorization"] = "Bearer #{access_token}"
 	result = https.request(req)
 	if result.code.to_i == 200
+		puts notify "google photos media created!"
 		return true
 	else
 		puts notify "error occured while creating the media!!"
@@ -104,7 +105,11 @@ if $0 == __FILE__ then
     while true
 	puts "polling #{CONVERTED_PATH}..."
         Dir["#{CONVERTED_PATH}/*.mp4"].each do |file_path|
-            upload_to_google_photo( file_path, "test")
+	    begin
+		upload_to_google_photo( file_path, "test") 
+            rescue => e
+		puts notify e.message
+	    end
         end
         sleep 10
     end

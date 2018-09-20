@@ -12,9 +12,10 @@ require_relative "./util.rb"
 
 Dotenv.load
 
-RECORDED_PATH   = "/home/yusuke/home-tv/Videos/recorded"
-CONVERTING_PATH = "/home/yusuke/home-tv/Videos/converting"
-CONVERTED_PATH  = "/home/yusuke/home-tv/Videos/converted"
+RECORDED_PATH   = "/mnt/disks/videos/recorded"
+CONVERTING_PATH = "/mnt/disks/videos/converting"
+CONVERTED_PATH  = "/mnt/disks/videos/converted"
+
 
 $redis = Redis.new(url: ENV["REDIS_URL"])
 
@@ -27,8 +28,9 @@ def encode_ts_to_mp4 file_path, is_delete=true
 	File.delete("#{CONVERTED_PATH}/#{new_file_name}") if File.file?("#{CONVERTING_PATH}/#{new_file_name}")
 	tmp_name = SecureRandom.hex(3) + ".mp4"
 
-	movie = FFMPEG::Movie.new(file_path)
+	movie = FFMPEG::Movie.new(file_path) ; 0
 	options = %w( -fflags +discardcorrupt -bsf:a aac_adtstoasc -c:a copy -b:v 5000k -c:v libx264 -vf scale=1440x1080 )
+	#movie.transcode("#{CONVERTING_PATH}/#{tmp_name}", options) 
 	movie.transcode("#{CONVERTING_PATH}/#{tmp_name}", options) do |progress|
 		puts progress
 	end
@@ -44,8 +46,16 @@ end
 if $0 == __FILE__ then
     while true
 	puts "polling #{RECORDED_PATH}..."
-        Dir["#{RECORDED_PATH}/*.ts"].each do |file_path|
-            encode_ts_to_mp4 file_path
+	files_paths = Dir["#{RECORDED_PATH}/*.ts"]
+        files_paths.each do |file_path|
+        
+	        begin
+			encode_ts_to_mp4(file_path) ; 0
+		rescue FFMPEG::Error => e
+			puts notify e.message
+		end
+
+
         end
         sleep 10
     end
