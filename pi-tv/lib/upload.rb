@@ -18,6 +18,9 @@ CONVERTED_PATH  = "/mnt/disks/videos/converted"
 
 $redis = Redis.new(url: ENV["REDIS_URL"])
 
+class InsufficientQuota < Exception
+end
+
 
 class AccessTokenWrapper
 	attr_accessor :access_token
@@ -50,8 +53,18 @@ def get_upload_token file_path, access_token
 	start = Time.now
 	puts notify "Uploading #{file_path} to Google Photos"
 	file_name = File.basename file_path
-	upload_token = %x(  curl -X POST https://photoslibrary.googleapis.com/v1/uploads --data-binary @#{file_path} --header "X-Goog-Upload-File-Name: #{file_name}" --header "X-Goog-Upload-Protocol: raw" --header "content-type: application/octet-stream" --header "Authorization: Bearer #{access_token}" )
+	
+	command = "curl -X POST https://photoslibrary.googleapis.com/v1/uploads -T #{file_path} " + 
+		" --header \"X-Goog-Upload-File-Name: #{file_name}\" --header \"X-Goog-Upload-Protocol: raw\" " + 
+		" --header \"content-type: application/octet-stream\" " + 
+        	" --header \"Authorization: Bearer #{access_token}\" "
+	upload_token = %x( #{command} )
+
+	puts upload_token
+
 	raise "authentication invalid #{upload_token}" if upload_token.include? "Authentication session is not defined."
+	raise InsufficientQuota.new "quota exeeded" if upload_token.include? "Insufficient tokens for quota"
+
 	if upload_token
 		elapsed = Time.now - start
 		puts notify "Finished uploading #{file_path} in #{elapsed} seconds"
@@ -100,17 +113,32 @@ def upload_to_google_photo file_path, description, is_delete=true
 end
 
 
+def get_delay_time consecutive_error_count
+	return consecutive_error_count ** 5 + 15
+end
+
 
 if $0 == __FILE__ then
+    consecutive_error_count = 0
     while true
+	delay_time = 10
 	puts "polling #{CONVERTED_PATH}..."
         Dir["#{CONVERTED_PATH}/*.mp4"].each do |file_path|
 	    begin
 		upload_to_google_photo( file_path, "test") 
+		consecutive_error_count = 0
+	    rescue InsufficientQuota => e
+		puts notify "insufficient quota left in google photo!!"
+		delay_time = 60 * 60 * 12 # wait 12 hours
+		break
             rescue => e
 		puts notify e.message
+		consecutive_error_count = consecutive_error_count + 1
+		delay_time = get_delay_time consecutive_error_count
+		break
 	    end
         end
-        sleep 10
+	puts "delay is #{delay_time}"
+        sleep delay_time
     end
 end
