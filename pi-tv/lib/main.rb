@@ -77,7 +77,7 @@ def record_show show
 			puts notify "recording using #{device_to_use}"
 
 	                command =  "recpt1 --b25 --device #{device_to_use} --strip #{show["show"]["channel_number"]} #{show["footage_duration"]} #{RECORDING_PATH}/#{file_name}"
-			# command = "recpt1 --b25 --device #{device_to_use} --strip #{show["show"]["channel_number"]} 30 #{RECORDING_PATH}/#{file_name}"
+			# command = "recpt1 --b25 --device #{device_to_use} --strip #{show["show"]["channel_number"]} 10 #{RECORDING_PATH}/#{file_name}"
 			p command
                 	result = system(command)
 	                puts result
