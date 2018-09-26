@@ -4,8 +4,8 @@ require 'dotenv'
 Dotenv.load
 
 path_to_watch =    ENV["RECORDED_PATH"]
-path_to_upload =   ENV["RECORDING_PATH"]
-path_to_complete = ENV["RECORDED_PATH"]
+path_to_upload =   ENV["UPLOADING_PATH"]
+path_to_complete = ENV["UPLOADED_PATH"]
 
 puts "uploader live..."
 puts "watching #{path_to_watch}..."
