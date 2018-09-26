@@ -28,3 +28,5 @@ dump.rdb
 *.mp4
 *.ts
 
+._.DS_Store
+.tmp.drivedownload
