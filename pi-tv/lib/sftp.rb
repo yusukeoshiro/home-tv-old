@@ -3,9 +3,9 @@ require 'dotenv'
 
 Dotenv.load
 
-path_to_watch =    "/home/pi/home-tv/Videos/recorded"
-path_to_upload =   "/home/yusuke/videos/recording"
-path_to_complete = "/home/yusuke/videos/recorded"
+path_to_watch =    ENV["RECORDED_PATH"]
+path_to_upload =   ENV["RECORDING_PATH"]
+path_to_complete = ENV["RECORDED_PATH"]
 
 puts "uploader live..."
 puts "watching #{path_to_watch}..."

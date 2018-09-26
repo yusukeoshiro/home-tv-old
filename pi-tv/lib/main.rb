@@ -7,8 +7,8 @@ require_relative "./util.rb"
 
 Dotenv.load
 
-RECORDING_PATH = "/home/pi/home-tv/Videos/recording"
-RECORDED_PATH  = "/home/pi/home-tv/Videos/recorded"
+RECORDING_PATH = ENV["RECORDING_PATH"]
+RECORDED_PATH  = ENV["RECORDED_PATH"]
 
 
 def record_show show

@@ -12,9 +12,9 @@ require_relative "./util.rb"
 
 Dotenv.load
 
-RECORDED_PATH   = "/home/yusuke/videos/recorded"
-CONVERTING_PATH = "/home/yusuke/videos/converting"
-CONVERTED_PATH  = "/home/yusuke/videos/converted"
+RECORDED_PATH   = ENV["RECORDED_PATH"]
+CONVERTING_PATH = ENV["CONVERTING_PATH"]
+CONVERTED_PATH  = ENV["CONVERTING_PATH"]
 
 $redis = Redis.new(url: ENV["REDIS_URL"])
 
