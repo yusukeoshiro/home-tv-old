@@ -6,3 +6,8 @@ development:
   :concurrency: 1
 # Set timeout to 8 on Heroku, longer if you manage your own systems.
 :timeout: 8
+
+:schedule:
+  fetch_scheduler:
+    every: '10m'
+    class: FetchScheduler

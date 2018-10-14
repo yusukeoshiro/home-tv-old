@@ -23,7 +23,7 @@ gem 'listen', '~> 3.0'
 gem 'streamio-ffmpeg'
 gem 'foreman'
 gem 'net-sftp'
-
+gem 'sidekiq-scheduler'
 
 
 group :development, :test do
