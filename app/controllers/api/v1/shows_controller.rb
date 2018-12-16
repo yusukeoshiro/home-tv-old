@@ -4,7 +4,13 @@ module Api
       skip_before_action :verify_authenticity_token
 
       def update
-        p params
+        uuid = params[:uuid]
+        finished = params['finished']
+        recording = Recording.find_by(show_uuid: uuid)
+        recording.taskts.delete(finished)
+        recording.save
+
+        render(json: {})
       end
 
       def index
