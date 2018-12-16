@@ -1,4 +1,6 @@
-class VideoManipulationWorker
+require 'sidekiq-scheduler'
+
+class MoveScheduler
   include Sidekiq::Worker
 
   def perform
