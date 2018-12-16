@@ -3,11 +3,15 @@ class Reservation
   include Mongoid::Timestamps
   has_many :recordings
 
+  validates :folder_name, presence: true
+  validates :keyword, presence: true
+
   field :keyword, type: String
   field :channel_number, type: Integer
   field :folder_name, type: String
   field :enabled, type: String, default: true
   # field :last_recorded_at, type: DateTime
+
 
   scope :actives, -> { where(enabled: true) }
 
