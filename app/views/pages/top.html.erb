@@ -23,6 +23,7 @@
 
         <button class="btn btn-primary" ng-click="prev();">Previous</button>
         <button class="btn btn-primary" ng-click="next();">Next</button>
+        {{ date }}
         <div style="position: relative;">
             <div class="show" ng-repeat="show in shows" style="position: absolute;"
                 ng-class="{'finished': show.isFinished}"
@@ -35,8 +36,6 @@
                 <p style="font-size: 70%;">
                     {{ show.description }}
                 </p>
-
-
             </div>
 
         </div>
@@ -87,17 +86,14 @@
                     console.log( response );
                 },
                 function(response) {
-                    console.log(response);
+                    alert(response.data.message);
                 }
             );
-
         }
 
 
         $scope.init = function () {
             $scope.getShows( $scope.date );
-
-
         }
 
         $scope.showReservePanel = function ( show ) {

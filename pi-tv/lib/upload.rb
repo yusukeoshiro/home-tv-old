@@ -18,8 +18,7 @@ CONVERTED_PATH  = ENV["CONVERTED_PATH"]
 
 $redis = Redis.new(url: ENV["REDIS_URL"])
 
-class InsufficientQuota < Exception
-end
+class InsufficientQuota < Exception; end
 
 
 class AccessTokenWrapper
@@ -53,10 +52,10 @@ def get_upload_token file_path, access_token
 	start = Time.now
 	puts notify "Uploading #{file_path} to Google Photos"
 	file_name = File.basename file_path
-	
-	command = "curl -X POST https://photoslibrary.googleapis.com/v1/uploads -T #{file_path} " + 
-		" --header \"X-Goog-Upload-File-Name: #{file_name}\" --header \"X-Goog-Upload-Protocol: raw\" " + 
-		" --header \"content-type: application/octet-stream\" " + 
+
+	command = "curl -X POST https://photoslibrary.googleapis.com/v1/uploads -T #{file_path} " +
+		" --header \"X-Goog-Upload-File-Name: #{file_name}\" --header \"X-Goog-Upload-Protocol: raw\" " +
+		" --header \"content-type: application/octet-stream\" " +
         	" --header \"Authorization: Bearer #{access_token}\" "
 	upload_token = %x( #{command} )
 
@@ -125,7 +124,7 @@ if $0 == __FILE__ then
 	puts "polling #{CONVERTED_PATH}..."
         Dir["#{CONVERTED_PATH}/*.mp4"].each do |file_path|
 	    begin
-		upload_to_google_photo( file_path, "test") 
+		upload_to_google_photo( file_path, "test")
 		consecutive_error_count = 0
 	    rescue InsufficientQuota => e
 		puts notify "insufficient quota left in google photo!!"

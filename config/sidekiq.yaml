@@ -11,3 +11,6 @@ development:
   fetch_scheduler:
     every: '10m'
     class: FetchScheduler
+  reserve_scheduler:
+    every: '60m'
+    class: ReserveScheduler
