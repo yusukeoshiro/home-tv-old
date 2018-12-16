@@ -3,6 +3,10 @@ module Api
     class ShowsController < ApplicationController
       skip_before_action :verify_authenticity_token
 
+      def update
+        p params
+      end
+
       def index
         date = nil
         region = nil
