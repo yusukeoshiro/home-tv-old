@@ -79,9 +79,9 @@ def record_show(show)
 
     command =  "recpt1 --b25 --device #{device_to_use} --strip #{show['show']['channel_number']} #{show['footage_duration']} #{RECORDING_PATH}/#{file_name}"
     result = system(command)
-    puts result
     File.rename("#{RECORDING_PATH}/#{file_name}", "#{RECORDED_PATH}/#{file_name}")
     notify "Finished Recording #{show[:title]}"
+    update_recording_job(show['show']['uuid'], 'RECORD')
     return unless recover_tv_process
     return if open_devices.empty?
 

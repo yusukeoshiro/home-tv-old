@@ -23,7 +23,8 @@ rescue => e
 end
 
 def update_recording_job(show_uuid, status)
-  uri = URI(ENV['UPDATE_URL'].gsub(':UUID', show_uuid))
+  url = ENV['UPDATE_URL'].gsub(':UUID', show_uuid)
+  uri = URI(url)
   https = Net::HTTP.new(uri.host, uri.port)
   req = Net::HTTP::Post.new(uri.path)
   req.body = {
@@ -32,6 +33,7 @@ def update_recording_job(show_uuid, status)
   req['content-type'] = 'application/json'
   result = https.request(req)
   raise result.body if result.code.to_i != 200
+  :ok
 rescue => e
   puts 'something went wrong...'
   puts e.message
