@@ -41,12 +41,6 @@ def encode_ts_to_mp4(file_path, is_delete=true)
   "#{CONVERTED_PATH}/#{new_file_name}"
 end
 
-def uuid_from_file_name(file_name)
-  base = File.basename(file_name, '.mp4')
-  uuid = base.split('_')[1]
-  uuid
-end
-
 if $0 == __FILE__ then
   while true
     puts "polling #{RECORDED_PATH}..."

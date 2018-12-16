@@ -23,6 +23,7 @@ rescue => e
 end
 
 def update_recording_job(show_uuid, status)
+  p url
   url = ENV['UPDATE_URL'].gsub(':UUID', show_uuid)
   uri = URI(url)
   https = Net::HTTP.new(uri.host, uri.port)
@@ -37,4 +38,10 @@ def update_recording_job(show_uuid, status)
 rescue => e
   puts 'something went wrong...'
   puts e.message
+end
+
+def uuid_from_file_name(file_name)
+  base = File.basename(file_name, '.mp4')
+  uuid = base.split('_')[2]
+  uuid
 end
