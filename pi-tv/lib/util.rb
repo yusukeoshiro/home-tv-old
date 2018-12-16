@@ -23,8 +23,8 @@ rescue => e
 end
 
 def update_recording_job(show_uuid, status)
-  p url
   url = ENV['UPDATE_URL'].gsub(':UUID', show_uuid)
+  p url
   uri = URI(url)
   https = Net::HTTP.new(uri.host, uri.port)
   req = Net::HTTP::Post.new(uri.path)
