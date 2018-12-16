@@ -11,7 +11,7 @@ class ShowRecorderWorker
         'command' => 'RECORD',
         'show' => {
           'show' => show,
-          'footage_duration' => 10 # show.footage_duration
+          'footage_duration' => show.footage_duration
         }
       }
       $redis.publish 'command_request', payload.to_json
