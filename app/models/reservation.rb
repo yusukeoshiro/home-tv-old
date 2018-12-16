@@ -1,6 +1,7 @@
 class Reservation
   include Mongoid::Document
   include Mongoid::Timestamps
+  has_many :recordings
 
   field :keyword, type: String
   field :channel_number, type: Integer
@@ -12,7 +13,10 @@ class Reservation
 
   def record
     shows.each do |show|
-      recording = Recording.new(show_uuid: show.uuid)
+      recording = Recording.new(
+        show_uuid: show.uuid,
+        reservation: self
+      )
       next if recording.reserved?
 
       recording.record

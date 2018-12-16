@@ -95,6 +95,8 @@ GEM
       raabro (~> 1.1)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    httparty (0.16.2)
+      multi_xml (>= 0.5.2)
     i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     io-like (0.3.0)
@@ -260,6 +262,7 @@ DEPENDENCIES
   dotenv
   dotenv-rails
   foreman
+  httparty
   jbuilder (~> 2.5)
   listen (~> 3.0)
   mongoid

@@ -40,4 +40,8 @@ class Show
     (DateTime.now > start_time) && (DateTime.now <= end_time)
   end
 
+  def file_name
+    @file_name ||= "#{start_time.new_offset('+09:00').strftime('%Y%m%d_%H%M')}_#{uuid}"
+  end
+
 end

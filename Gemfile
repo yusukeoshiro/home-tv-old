@@ -24,7 +24,7 @@ gem 'streamio-ffmpeg'
 gem 'foreman'
 gem 'net-sftp'
 gem 'sidekiq-scheduler'
-
+gem 'httparty'
 
 group :development, :test do
   gem 'dotenv-rails'

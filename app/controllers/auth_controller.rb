@@ -2,7 +2,7 @@ class AuthController < ApplicationController
   def login
     uri = URI.parse( request.original_url )
     my_host = ( (uri.port == 443) ? "https://" : "http://" ) + uri.host + (( (uri.port.to_i == 80) || (uri.port.to_i == 443) ) ? "" : ":#{uri.port}")
-    redirect_url = $google_auth_client.auth_code.authorize_url(:redirect_uri => "#{my_host}/auth/callback", :scope => "profile email https://www.googleapis.com/auth/photoslibrary", :access_type => "offline", :approval_prompt => "force")
+    redirect_url = $google_auth_client.auth_code.authorize_url(:redirect_uri => "#{my_host}/auth/callback", :scope => "profile email https://www.googleapis.com/auth/photoslibrary https://www.googleapis.com/auth/drive", :access_type => "offline", :approval_prompt => "force")
     redirect_to redirect_url
   end
 
