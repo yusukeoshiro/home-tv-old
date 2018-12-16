@@ -10,95 +10,102 @@ Dotenv.load
 RECORDING_PATH = ENV['RECORDING_PATH']
 RECORDED_PATH  = ENV['RECORDED_PATH']
 
+def open_devices
+  devices = ['/dev/px4video2', '/dev/px4video3']
+  pids = `pidof recpt1`.strip.split(' ')
+  pids.each do |pid|
+    command = `ps -p #{pid} -o args`
+    devices.each do |device|
+      devices.delete(device) if command.include? device
+    end
+  end
+  devices
+end
+
+def freeable_device
+  devices = ['/dev/px4video2', '/dev/px4video3']
+  pids = `pidof recpt1`.strip.split(' ')
+  pids.each do |pid|
+    command = `ps -p #{pid} -o args`
+    next unless command.include? 'http'
+
+    devices.each do |device|
+      return device if command.include?(device)
+    end
+  end
+  nil
+end
+
+def freeable_process
+  devices = ['/dev/px4video2', '/dev/px4video3']
+  pids = `pidof recpt1`.strip.split(' ')
+  pids.each do |pid|
+    command = `ps -p #{pid} -o args`
+    next unless command.include? 'http'
+
+    devices.each do |device|
+      return pid if command.include?(device)
+    end
+  end
+  nil
+end
+
+
 def record_show(show)
   Thread.new do
     # if true do
-    publisher = Redis.new(url: ENV['REDIS_URL'])
     puts notify "Starting Recording #{show['show']['title']}"
     start_time = DateTime.parse(show['show']['start_time']).new_offset('+09:00')
     file_name = "#{start_time.strftime('%Y%m%d_%H%M')}_#{show['show']['uuid']}.ts"
 
-    # check for open device, if any
-    devices =      ['/dev/px4video2', '/dev/px4video3']
-    free_devices = ['/dev/px4video2', '/dev/px4video3']
-    quitable_device = nil
-    quitable_process = nil
     device_to_use = nil
     recover_tv_process = false
-    pids = %x(pidof recpt1).strip.split(' ')
 
-    pids
-    devices.each do |device|
-      pids.each do |pid|
-        command = %x( ps -p #{pid} -o args )
-        if command.include? device
-          puts command.class
-          free_devices.delete_at( free_devices.index device )
-          if command.include? 'http'
-            puts 'http found'
-            quitable_device = device
-            quitable_process = pid
-            puts "#{quitable_device} / #{quitable_process}"
-          end
-        end
-      end
-    end
-
-    p 'free devices'
-    p free_devices
-
-    if free_devices.length > 0
+    if open_devices.any?
       puts 'free device found'
-      device_to_use = free_devices.first
+      device_to_use = open_devices.first
     else
-      puts 'free device not found'
-      puts quitable_process.class
-      if !quitable_process.nil?
-        puts '++++++++++'
-        result = %x(kill #{quitable_process})
-        recover_tv_process = true
-        puts 'killed TV process'
-        device_to_use = quitable_device
-      else
-        puts 'killable process is not found...'
-      end
+      raise 'sorry no device available! E1' if freeable_device.nil?
+
+      puts 'freeing tv process'
+      device_to_use = freeable_device
+      `kill #{freeable_process}`
+      recover_tv_process = true
+
     end
+    raise 'sorry no device available! E2' if device_to_use.nil?
 
-    if device_to_use
-      puts notify "recording using #{device_to_use}"
+    puts notify "recording using #{device_to_use}"
 
-      command =  "recpt1 --b25 --device #{device_to_use} --strip #{show['show']['channel_number']} #{show['footage_duration']} #{RECORDING_PATH}/#{file_name}"
-      result = system(command)
-      puts result
-      File.rename("#{RECORDING_PATH}/#{file_name}", "#{RECORDED_PATH}/#{file_name}")
-      notify "Finished Recording #{show[:title]}"
-      publisher.publish('convert_request', "#{RECORDED_PATH}/#{file_name}")
+    command =  "recpt1 --b25 --device #{device_to_use} --strip #{show['show']['channel_number']} #{show['footage_duration']} #{RECORDING_PATH}/#{file_name}"
+    result = system(command)
+    puts result
+    File.rename("#{RECORDING_PATH}/#{file_name}", "#{RECORDED_PATH}/#{file_name}")
+    notify "Finished Recording #{show[:title]}"
+    return unless recover_tv_process
+    return if open_devices.empty?
 
-      if recover_tv_process
-        command = "recpt1 --device #{quitable_device} --b25 --strip --sid hd --http 8888 | tee logs/log.tv &"
-        system(command)
-      end
-    else
-      puts notify "sorry you don't have any device available now to record #{show['title']}"
-    end
+    command = "recpt1 --device #{open_devices.first} --b25 --strip --sid hd --http 8888 | tee logs/log.tv &"
+    system(command)
   end
 end
 
-puts 'recorder live...'
-subscriber = Redis.new(url: ENV['REDIS_URL'])
-subscriber.subscribe('command_request') do |on|
-  on.message do |channel, data|
-    begin
-      data.force_encoding('utf-8')
-      payload = JSON.parse data
-      if payload['command'] == 'RECORD'
-        show = payload['show']
-        puts show
-        record_show show
+if __FILE__ == $0
+  puts 'recorder live...'
+  subscriber = Redis.new(url: ENV['REDIS_URL'])
+  subscriber.subscribe('command_request') do |on|
+    on.message do |channel, data|
+      begin
+        data.force_encoding('utf-8')
+        payload = JSON.parse data
+        if payload['command'] == 'RECORD'
+          show = payload['show']
+          record_show(show)
+        end
+      rescue => e
+        puts e.message
+        puts 'failed'
       end
-    rescue => e
-      puts e.message
-      puts 'failed'
     end
   end
 end
