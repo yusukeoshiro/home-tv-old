@@ -7,7 +7,7 @@ module Api
         uuid = params[:uuid]
         finished = params['finished']
         recording = Recording.find_by(show_uuid: uuid)
-        recording.taskts.delete(finished)
+        recording.tasks.delete(finished)
         recording.save
 
         render(json: {})
