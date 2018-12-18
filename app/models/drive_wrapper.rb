@@ -86,8 +86,7 @@ class DriveWrapper
 
     def self.find_by_name(file_name)
       my_token = DriveWrapper::AccessToken.instance
-      url = "https://www.googleapis.com/drive/v2/files?q=title='#{file_name}'"
-      url = URI.encode(url)
+      url = URI.encode("https://www.googleapis.com/drive/v2/files?q=title='#{file_name}'")
 
       options = {
         headers: {
