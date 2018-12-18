@@ -3,12 +3,14 @@ require 'redis'
 require 'json'
 require 'date'
 require 'pry'
+require 'log'
 require_relative './util.rb'
 
 Dotenv.load
 
 RECORDING_PATH = ENV['RECORDING_PATH']
 RECORDED_PATH  = ENV['RECORDED_PATH']
+logger = Logger.new(STDOUT)
 
 def open_devices
   devices = ['/dev/px4video2', '/dev/px4video3']
@@ -54,7 +56,7 @@ end
 def record_show(show)
   Thread.new do
     # if true do
-    puts notify "Starting Recording #{show['show']['title']}"
+    logger.debug(notify "Starting Recording #{show['show']['title']}")
     start_time = DateTime.parse(show['show']['start_time']).new_offset('+09:00')
     file_name = "#{start_time.strftime('%Y%m%d_%H%M')}_#{show['show']['uuid']}.ts"
 
@@ -62,36 +64,39 @@ def record_show(show)
     recover_tv_process = false
 
     if open_devices.any?
-      puts 'free device found'
       device_to_use = open_devices.first
     else
-      raise 'sorry no device available! E1' if freeable_device.nil?
+      if freeable_device.nil?
+        logger.warn('sorry no device available! E1')
+        raise 'sorry no device available! E1'
+      end
 
-      puts 'freeing tv process'
+      logger.debug('freeing tv process')
       device_to_use = freeable_device
       `kill #{freeable_process}`
       recover_tv_process = true
-
+      sleep(5)
     end
     raise 'sorry no device available! E2' if device_to_use.nil?
 
-    puts notify "recording using #{device_to_use}"
+    logger.debug(notify "recording using #{device_to_use}")
 
-    command =  "recpt1 --b25 --device #{device_to_use} --strip #{show['show']['channel_number']} #{show['footage_duration']} #{RECORDING_PATH}/#{file_name}"
-    result = system(command)
+    command = "recpt1 --b25 --device #{device_to_use} --strip #{show['show']['channel_number']} #{show['footage_duration']} #{RECORDING_PATH}/#{file_name}"
+    system(command)
     File.rename("#{RECORDING_PATH}/#{file_name}", "#{RECORDED_PATH}/#{file_name}")
-    notify "Finished Recording #{show[:title]}"
+    logger.debug(notify("Finished Recording #{show[:title]}"))
     update_recording_job(show['show']['uuid'], 'RECORD')
     return unless recover_tv_process
     return if open_devices.empty?
 
+    sleep(5)
     command = "recpt1 --device #{open_devices.first} --b25 --strip --sid hd --http 8888 | tee logs/log.tv &"
     system(command)
   end
 end
 
 if __FILE__ == $0
-  puts 'recorder live...'
+  logger.debug('recorder live...')
   subscriber = Redis.new(url: ENV['REDIS_URL'])
   subscriber.subscribe('command_request') do |on|
     on.message do |channel, data|
@@ -103,8 +108,8 @@ if __FILE__ == $0
           record_show(show)
         end
       rescue => e
-        puts e.message
-        puts 'failed'
+        logger.fatal(e.message)
+        logger.fatal('failed')
       end
     end
   end
