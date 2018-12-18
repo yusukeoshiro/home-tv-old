@@ -34,6 +34,11 @@ class MoveScheduler
       end
 
       file.move_to_folder(target_folder.id)
+
+      extension = File.extname(file.name)
+      name = File.basename(file.name, '.*')
+      new_file_name = "#{name}_#{show.title}#{extension}"
+      file.rename(new_file_name)
       recording.tasks.delete('MOVE')
       recording.save
     end

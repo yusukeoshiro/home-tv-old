@@ -84,6 +84,24 @@ class DriveWrapper
       self
     end
 
+    def rename(new_name)
+      url = "https://www.googleapis.com/drive/v3/files/#{id}"
+      options = {
+        headers: {
+          'Authorization' => "Bearer #{access_token.token.token}",
+          'Content-Type' => 'application/json'
+        },
+        body: {
+          name: new_name
+        }.to_json
+      }
+      result = HTTParty.patch(url, options)
+      return if result.code == 200
+
+      puts result.body
+      raise 'rename failed for some reason'
+    end
+
     def self.find_by_name(file_name)
       my_token = DriveWrapper::AccessToken.instance
       url = URI.encode("https://www.googleapis.com/drive/v2/files?q=title='#{file_name}'")
