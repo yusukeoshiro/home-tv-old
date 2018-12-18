@@ -87,6 +87,8 @@ class DriveWrapper
     def self.find_by_name(file_name)
       my_token = DriveWrapper::AccessToken.instance
       url = "https://www.googleapis.com/drive/v2/files?q=title='#{file_name}'"
+      url = URI.encode(url)
+
       options = {
         headers: {
           Authorization: "Bearer #{my_token.token.token}"
@@ -94,6 +96,7 @@ class DriveWrapper
       }
       result = HTTParty.get(url, options)
       result = JSON.parse(result.body)
+      return nil if result['items'].nil?
       return nil unless result['items'].length == 1
 
       file = DriveWrapper::File.new
