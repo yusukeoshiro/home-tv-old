@@ -44,4 +44,12 @@ class Show
     @file_name ||= "#{start_time.new_offset('+09:00').strftime('%Y%m%d_%H%M')}_#{uuid}"
   end
 
+  def record
+    recording = Recording.new(
+      show_uuid: uuid
+    )
+    recording.record
+    recording.save
+  end
+
 end
