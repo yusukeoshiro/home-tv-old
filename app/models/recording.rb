@@ -20,6 +20,7 @@ class Recording
   field :tasks, type: Array
   field :complete, type: Boolean
 
+  scope :to_move, -> { where('tasks.1' => { :$exists => false }, complete: false, tasks: 'MOVE') }
   def set_default
     raise 'show_uuid must be set' if show_uuid.blank?
 
@@ -41,7 +42,10 @@ class Recording
   end
 
   def reserved?
-    @reserved ||= Recording.where(show_uuid: show_uuid).count.positive?
+    Recording.where(
+      :show_uuid => show_uuid,
+      :id.nin => [id.to_s]
+    ).count.positive?
   end
 
   private
