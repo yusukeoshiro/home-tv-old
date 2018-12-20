@@ -9,7 +9,7 @@ development:
 
 :schedule:
   fetch_scheduler:
-    every: '10m'
+    every: '180m'
     class: FetchScheduler
   reserve_scheduler:
     every: '60m'
