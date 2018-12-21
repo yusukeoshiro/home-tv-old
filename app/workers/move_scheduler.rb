@@ -10,9 +10,13 @@ class MoveScheduler
     default_folder = DriveWrapper::File.find_by_name('Home TV')
 
     recordings_to_move.each do |recording|
+      p recording.show.title
       show = recording.show
       file_name = show.file_name + '.mp4'
+      p 'searching google drive by ' + file_name
       file = DriveWrapper::File.find_by_name(file_name)
+      p 'found...'
+      p file
       next if file.nil?
 
       target_folder = nil
@@ -28,6 +32,9 @@ class MoveScheduler
       else
         target_folder = default_folder
       end
+
+      p 'target folder is...'
+      p target_folder
 
       file.move_to_folder(target_folder.id)
 
