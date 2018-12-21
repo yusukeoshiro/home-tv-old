@@ -4,7 +4,7 @@ class MoveScheduler
   include Sidekiq::Worker
 
   def perform
-    recordings_to_move = Recording.where('tasks.1' => { :$exists => false }, complete: false, tasks: 'MOVE').to_a
+    recordings_to_move = Recording.to_move
     return if recordings_to_move.empty?
 
     default_folder = DriveWrapper::File.find_by_name('Home TV')
