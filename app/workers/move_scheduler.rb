@@ -4,6 +4,8 @@ class MoveScheduler
   include Sidekiq::Worker
 
   def perform
+    my_token = DriveWrapper::AccessToken.instance
+    my_token.token = my_token.token.refresh!
     recordings_to_move = Recording.to_move
     return if recordings_to_move.empty?
 
