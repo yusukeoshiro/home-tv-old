@@ -26,7 +26,7 @@ def encode_ts_to_mp4(file_path, is_delete=true)
   tmp_name = SecureRandom.hex(3) + '.mp4'
 
   movie = FFMPEG::Movie.new(file_path) ; 0
-  options = %w[-fflags +discardcorrupt -bsf:a aac_adtstoasc -c:a copy -b:v 5000k -c:v libx264 -vf scale=1440x1080]
+  options = %w[-fflags +discardcorrupt -bsf:a aac_adtstoasc -c:a copy -b:v 5000k -c:v libx264 -vf scale=1920x1080]
   movie.transcode("#{CONVERTING_PATH}/#{tmp_name}", options) do |progress|
     puts progress
   end
