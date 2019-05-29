@@ -15,10 +15,21 @@ class Recording
   field :is_error, type: Boolean
   # field :file_name, type: String
   field :job_id, type: String
-  field :show_uuid, type: String
-  field :epg_date, type: Date
   field :tasks, type: Array
   field :complete, type: Boolean
+
+  # show fields
+  field :show_uuid, type: String
+  field :start_time, type: DateTime
+  field :end_time, type: DateTime
+  field :epg_date, type: Date
+  field :title, type: String
+  field :description, type: String
+  field :file_name, type: String
+  field :channel_name, type: String
+  field :channel_number, type: Integer
+  field :duration, type: Integer
+
 
   scope :to_move, -> { where('tasks.1' => { :$exists => false }, complete: false, tasks: 'MOVE') }
   def set_default
@@ -39,6 +50,16 @@ class Recording
 
     jid = ShowRecorderWorker.perform_at(show.start_time, show.uuid)
     self.job_id = jid
+
+    self.start_time = show.start_time
+    self.end_time = show.end_time
+    self.epg_date = show.epg_date
+    self.title = show.title
+    self.description = show.description
+    self.file_name = show.file_name
+    self.channel_name = show.channel_name
+    self.channel_number = show.channel_number
+    self.duration = show.duration
   end
 
   def reserved?
