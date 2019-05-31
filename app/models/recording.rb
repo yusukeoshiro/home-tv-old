@@ -48,8 +48,8 @@ class Recording
     raise(AlreadyOverError) if show.over?
     raise(AlreadyReservedError) if reserved?
 
-    jid = ShowRecorderWorker.perform_at(show.start_time, show.uuid)
-    self.job_id = jid
+    # jid = ShowRecorderWorker.perform_at(show.start_time, show.uuid)
+    # self.job_id = jid
 
     self.start_time = show.start_time
     self.end_time = show.end_time
