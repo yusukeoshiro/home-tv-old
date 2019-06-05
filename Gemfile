@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.4.4'
+ruby '2.5.5'
 gem 'rails', '~> 5.2.1'
 gem 'puma', '~> 3.11'
 gem 'sass-rails', '~> 5.0'
@@ -9,6 +9,7 @@ gem 'coffee-rails', '~> 4.2'
 gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', '>= 1.1.0', require: false
+gem 'google-cloud-pubsub', '~> 0.35.0'
 
 # added by Yusuke
 gem 'mongoid'

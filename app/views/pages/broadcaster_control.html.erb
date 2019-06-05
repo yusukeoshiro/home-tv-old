@@ -1,0 +1,77 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js"></script>
+
+
+<div ng-app="my-app" ng-controller="AppController as app" ng-init="init();">
+  <div class="container">
+    <h1>Broadcaster Remote</h1>
+    <div style="margin-bottom: 30px;">
+      <a href="#" onClick="window.location.href='/'">録画</a>
+    </div>
+
+    <button class="btn btn-danger" ng-click="turnOff();">OFF</button>
+    <button class="btn btn-primary" ng-click="turnOn(27);">NHK総合</button>
+    <button class="btn btn-primary" ng-click="turnOn(26);">NHKEテレ</button>
+    <button class="btn btn-primary" ng-click="turnOn(25);">日本テレビ</button>
+    <button class="btn btn-primary" ng-click="turnOn(24);">テレビ朝日 </button>
+    <button class="btn btn-primary" ng-click="turnOn(22);">TBS</button>
+    <button class="btn btn-primary" ng-click="turnOn(23);">テレビ東京</button>
+    <button class="btn btn-primary" ng-click="turnOn(21);">フジテレビ</button>
+
+  </div>
+
+</div>
+
+<script>
+  var module = angular.module('my-app', []);
+  module.controller('AppController', function($scope, $http,  $interval, $timeout) {
+
+    $scope.init = function () {
+
+    }
+
+    $scope.turnOff = function () {
+      $http({
+        method: 'POST',
+        url: '/api/v1/broadcaster_control',
+        contentType: 'application/JSON',
+        data: {
+          instruction: 'TURN_OFF'
+        }
+      }).then(
+        function(response) {
+          alert("Success!");
+          console.log( response );
+        },
+        function(response) {
+          alert(response.data.message);
+        }
+      );
+    }
+
+    $scope.turnOn = function (channelNumber) {
+      $http({
+        method: 'POST',
+        url: '/api/v1/broadcaster_control',
+        contentType: 'application/JSON',
+        data: {
+          channel_number: channelNumber,
+          instruction: 'TURN_ON'
+        }
+      }).then(
+        function(response) {
+          alert("Success!");
+          console.log( response );
+        },
+        function(response) {
+          alert(response.data.message);
+        }
+      );
+
+    }
+  });
+</script>
