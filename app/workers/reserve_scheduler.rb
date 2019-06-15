@@ -4,8 +4,7 @@ class ReserveScheduler
   include Sidekiq::Worker
 
   def perform
-    Reservation.where(enabled: true).each do |reservation|
-      reservation.record
-    end
+    util = ReserveUtil.new
+    util.reserve
   end
 end
