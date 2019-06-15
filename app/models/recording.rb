@@ -30,8 +30,10 @@ class Recording
   field :channel_number, type: Integer
   field :duration, type: Integer
 
-
   scope :to_move, -> { where('tasks.1' => { :$exists => false }, complete: false, tasks: 'MOVE') }
+
+  index({ epg_date: 1 }, expire_after_seconds: 60 * 60 * 24 * 7)
+
   def set_default
     raise 'show_uuid must be set' if show_uuid.blank?
 
