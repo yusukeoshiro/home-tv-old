@@ -21,6 +21,7 @@ class Show
   validates_presence_of :title, :start_time, :end_time
 
   index({ uuid: 1, epg_date: 1 }, unique: true)
+  index({ delete_on: 1 }, expire_after_seconds: 0)
 
   scope :showing_now, -> { where( :start_time.lte => DateTime.now, :end_time.gt => DateTime.now ) }
 
