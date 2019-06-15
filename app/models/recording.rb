@@ -30,7 +30,7 @@ class Recording
   field :channel_number, type: Integer
   field :duration, type: Integer
 
-  scope :to_move, -> { where('tasks.1' => { :$exists => false }, complete: false, tasks: 'MOVE') }
+  scope :to_move, -> { where(complete: false) }
 
   index({ epg_date: 1 }, expire_after_seconds: 60 * 60 * 24 * 7)
 
