@@ -104,3 +104,13 @@ recpt1 --b25 --strip --sid hd --http 8888
 
 
 https://www.jifu-labo.net/2018/02/plex_tv_tuner/
+
+
+```bash
+docker build -t gcr.io/homt-tv-1536600206951/home-tv .
+
+docker push gcr.io/homt-tv-1536600206951/home-tv
+
+gcloud beta run deploy ir-home --image=gcr.io/homt-tv-1536600206951/home-tv:latest --region=us-central1
+
+```
