@@ -15,6 +15,9 @@ Rails.application.routes.draw do
       post 'show/:uuid/update', to: 'shows#update'
       post 'broadcaster_control', to: 'broadcasters#instruct'
 
+      post 'scheduler/fetch', to: 'shows#fetch'
+      post 'scheduler/reserve', to: 'shows#reserve'
+      post 'scheduler/move', to: 'shows#move'
     end
   end
 end

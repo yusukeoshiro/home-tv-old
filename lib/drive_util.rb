@@ -8,13 +8,12 @@ class DriveUtil
     default_folder = DriveWrapper::File.find_by_name('Home TV')
 
     recordings_to_move.each do |recording|
-      p recording.show.title
+      next if recording.show.nil?
+
       show = recording.show
       file_name = show.file_name + '.mp4'
-      p 'searching google drive by ' + file_name
+      puts 'searching google drive by ' + file_name
       file = DriveWrapper::File.find_by_name(file_name)
-      p 'found...'
-      p file
       next if file.nil?
 
       target_folder = nil

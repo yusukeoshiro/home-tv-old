@@ -7,7 +7,7 @@ development:
       skip_version_check: true
       options:
   options:
-
+    raise_not_found_error: false
 test:
   clients:
     default:
@@ -15,6 +15,7 @@ test:
       hosts:
         - localhost:27017
       options:
+        raise_not_found_error: false
         read:
           mode: :primary
         max_pool_size: 1
@@ -28,3 +29,4 @@ production:
       skip_version_check: true
       options:
   options:
+    raise_not_found_error: false

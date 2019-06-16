@@ -3,6 +3,32 @@ module Api
     class ShowsController < ApplicationController
       skip_before_action :verify_authenticity_token
 
+      def fetch
+        util = ShowFetchUtil.new
+        7.times do |i|
+          begin
+            fetch_date = Date.today + i
+            puts "fetching #{fetch_date}..."
+            util.fetch(fetch_date)
+          rescue => e
+            puts e.message
+          end
+        end
+        render(json: {})
+      end
+
+      def reserve
+        util = ReserveUtil.new
+        util.reserve
+        render(json: {})
+      end
+
+      def move
+        util = DriveUtil.new
+        util.move
+        render(json: {})
+      end
+
       def update
         uuid = params[:uuid]
         finished = params['finished']
