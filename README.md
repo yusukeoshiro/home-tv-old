@@ -114,3 +114,31 @@ docker push gcr.io/homt-tv-1536600206951/home-tv
 gcloud beta run deploy ir-home --image=gcr.io/homt-tv-1536600206951/home-tv:latest --region=us-central1
 
 ```
+
+
+### preparing mongodb
+```bash
+docker run -d -p 27017:27017  \
+    -e MONGO_INITDB_ROOT_USERNAME=$USER \
+    -e MONGO_INITDB_ROOT_PASSWORD=$PASSWORD \
+    mongo
+
+mongo \
+    --host 35.224.233.16 \
+    -u $USER \
+    -p $PASSWORD \
+    --authenticationDatabase admin
+```
+
+```javascript
+use home_tv;
+db.createUser({
+  user : 'yusuke',
+  pwd : 'x52ko4RefQYZ7YQiNCt86wxpniazkrfDwabCq5n4Ihh30YFAQ6',
+  roles : [
+    { role : 'dbOwner', db : 'home_tv' },
+    { role : 'dbAdmin', db : 'home_tv' }
+  ]
+});
+
+```
