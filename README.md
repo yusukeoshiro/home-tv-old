@@ -140,5 +140,10 @@ db.createUser({
     { role : 'dbAdmin', db : 'home_tv' }
   ]
 });
+db.getUsers();
 
+```
+
+```bash
+MONGODB_URI=mongodb://$USER:$PASSWORD@35.224.233.16:27017/home_tv rake db:mongoid:create_indexes
 ```
